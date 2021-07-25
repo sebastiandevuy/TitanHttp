@@ -11,6 +11,7 @@ TitanHTTP is a networking library built on top of Alamofire, providing easy and 
 - Making Data requests
 - Authentication and re-Authentication through a protocol
 - Request payloads with either a dictionary or encodable object
+- Prints requests and responses for easy debuging
 
 ## Usage
 
