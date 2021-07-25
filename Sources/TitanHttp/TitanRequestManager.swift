@@ -11,14 +11,15 @@ import Combine
 
 public class TitanRequestManager {
     private let session: Session
-    private let interceptor = TitanSessionRequestInterceptor()
+    private let interceptor: TitanSessionRequestInterceptor?
     
     // TODO: Later init with config options
-    public init() {
-        let configuration = Session.default.sessionConfiguration
-        // TODO setup config
+    public init(config: TitanConfiguration) {
+        let sessionConfiguration = config.sessionConfiguration ?? Session.default.sessionConfiguration
+        let interceptor = TitanSessionRequestInterceptor(authHandler: config.authHandler)
+        self.interceptor = interceptor
         
-        let alamofireSession = Session.init(configuration: configuration,
+        let alamofireSession = Session.init(configuration: sessionConfiguration,
                                             startRequestsImmediately: true,
                                             interceptor: interceptor,
                                             serverTrustManager: nil,

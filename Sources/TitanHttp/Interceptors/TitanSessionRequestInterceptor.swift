@@ -9,11 +9,43 @@ import Foundation
 import Alamofire
 
 class TitanSessionRequestInterceptor: RequestInterceptor {
-    func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        completion(.success(urlRequest))
+    private let authHandler: TitanAuthHandlerProtocol?
+    
+    init(authHandler: TitanAuthHandlerProtocol? = nil) {
+        self.authHandler = authHandler
     }
     
-    func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
-        completion(.doNotRetry)
+    func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+        guard let authHandler = authHandler,
+              let authHeaders = authHandler.getAuthenticationHeadersIfNeeded(forRequest: urlRequest) else {
+            completion(.success(urlRequest))
+            return
+        }
+        var request = urlRequest
+        authHeaders.forEach({request.headers.add(name: $0.key, value: $0.value)})
+        completion(.success(urlRequest))
+        
+    }
+    
+    func retry(_ request: Request, for session: Session,
+               dueTo error: Error,
+               completion: @escaping (RetryResult) -> Void) {
+        guard let originalRequest = request.request,
+            let statusCode = request.response?.statusCode,
+              let authHandler = authHandler else {
+            completion(.doNotRetry)
+            return
+        }
+        
+        switch statusCode {
+        case 403:
+            //Do auth again
+            authHandler.updateAuthentication(forRequest: originalRequest) { success in
+                success ? completion(.retry) : completion(.doNotRetry)
+            }
+        default:
+            completion(.doNotRetry)
+        }
+        
     }
 }
