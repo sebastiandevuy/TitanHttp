@@ -4,11 +4,7 @@
 [![N|Solid](https://media.npr.org/assets/img/2017/10/16/titan-41d62a75c7b7376fe8ff872bb1deec3bc24a4a14.jpeg)]()
 
 
-TitanHTTP is a networking library built on top of Alamofire, providing easy and convenient ways to make requests leveraging the power of the Combine framework. It is in Alpha stage so feedback is welcomed. 
-Currently supports:
-
-- Making Data requests
-- Authentication and re-Authentication through a protocol
+TitanHTTP is a networking library built on top of Alamofire, providing easy and convenient ways to make requests leveraging the power of the Combine framework. It is in Alpha stage so feedback is welcomed.
 
 ## Current Features
 
