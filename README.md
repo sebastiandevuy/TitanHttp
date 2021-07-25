@@ -48,12 +48,6 @@ public protocol TitanAuthHandlerProtocol {
 }
 ```
 
-public enum AuthenticationUpdateResult {
-    case success
-    case failure
-    case notRelevant
-}
-
 To make a basic request just create a subscriber and sink
 
 ```sh
