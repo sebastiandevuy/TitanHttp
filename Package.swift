@@ -14,7 +14,6 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/AckeeCZ/Reqres.git", from: "3.1.1"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.4.0")
     ],
     targets: [
@@ -22,7 +21,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "TitanHttp",
-            dependencies: ["Reqres", "Alamofire"]),
+            dependencies: ["Alamofire"]),
         .testTarget(
             name: "TitanHttpTests",
             dependencies: ["TitanHttp"]),
