@@ -47,7 +47,7 @@ public class TitanRequestManager {
                 let cacher = ResponseCacher(behavior: request.ignoreCache ? .doNotCache : .cache)
                 dataRequest.cacheResponse(using: cacher)
                 
-                return dataRequest.publishData().value()
+                return dataRequest.validate().publishData().value()
             case .encodable(let value, let encoding):
                 let dataRequest = session.request(request.url,
                                               method: HTTPMethod(rawValue: request.method.rawValue),
@@ -60,10 +60,10 @@ public class TitanRequestManager {
                 let cacher = ResponseCacher(behavior: request.ignoreCache ? .doNotCache : .cache)
                 dataRequest.cacheResponse(using: cacher)
                 
-                return dataRequest.publishData().value()
+                return dataRequest.validate().publishData().value()
             }
         } else {
-            return session.request(request.url, method: HTTPMethod(rawValue: request.method.rawValue), headers: nil).publishData().value()
+            return session.request(request.url, method: HTTPMethod(rawValue: request.method.rawValue), headers: nil).validate().publishData().value()
         }
     }
 }
