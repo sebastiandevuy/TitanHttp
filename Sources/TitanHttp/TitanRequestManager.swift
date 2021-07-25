@@ -31,7 +31,7 @@ public class TitanRequestManager {
     }
     
     // TODO. Map Errors to own so no one has to refer to AF
-    public func makeRequest(_ request: TitanHttpRequest) -> AnyPublisher<Data, AFError> {
+    public func makeRequest(_ request: TitanHttpRequest) -> AnyPublisher<Data, TitanError> {
         if let payload = request.payload {
             switch payload {
             case .dictionary(let value,
@@ -47,7 +47,13 @@ public class TitanRequestManager {
                 let cacher = ResponseCacher(behavior: request.ignoreCache ? .doNotCache : .cache)
                 dataRequest.cacheResponse(using: cacher)
                 
-                return dataRequest.validate().publishData().value()
+                return dataRequest
+                    .validate()
+                    .publishData()
+                    .value()
+                    .mapError { error in
+                    return TitanError.afError(description: error.localizedDescription)
+                }.eraseToAnyPublisher()
             case .encodable(let value, let encoding):
                 let dataRequest = session.request(request.url,
                                               method: HTTPMethod(rawValue: request.method.rawValue),
@@ -60,10 +66,21 @@ public class TitanRequestManager {
                 let cacher = ResponseCacher(behavior: request.ignoreCache ? .doNotCache : .cache)
                 dataRequest.cacheResponse(using: cacher)
                 
-                return dataRequest.validate().publishData().value()
+                return dataRequest
+                    .validate()
+                    .publishData()
+                    .value().mapError { error in
+                    return TitanError.afError(description: error.localizedDescription)
+                }.eraseToAnyPublisher()
             }
         } else {
-            return session.request(request.url, method: HTTPMethod(rawValue: request.method.rawValue), headers: nil).validate().publishData().value()
+            return session.request(request.url, method: HTTPMethod(rawValue: request.method.rawValue), headers: nil)
+                .validate()
+                .publishData()
+                .value()
+                .mapError { error in
+                return TitanError.afError(description: error.localizedDescription)
+            }.eraseToAnyPublisher()
         }
     }
 }

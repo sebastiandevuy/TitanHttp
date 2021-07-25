@@ -25,6 +25,15 @@ final class TitanLogger: EventMonitor {
     }
 
     func request<Value>(_ request: DataRequest, didParseResponse response: DataResponse<Value, AFError>) {
+        guard !request.isCancelled else {
+            let message = """
+            🔵🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽🔽
+            ⬇️ Request Cancelled: \(response.request?.description ?? "No request description")
+            🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼🔼
+            """
+            print(message)
+            return
+        }
         var responseString: String?
         if let data = response.data {
             responseString = String(data: data, encoding: .ascii)
