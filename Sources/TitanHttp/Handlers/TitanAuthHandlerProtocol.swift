@@ -16,6 +16,12 @@ public protocol TitanAuthHandlerProtocol {
     /// Provides the request that failed with 403 to obtain credentials and have them available for next retry
     /// - Parameters:
     ///   - request: original request
-    ///   - completion: signals the library of the authentication credentials update success or failure in order to retry or not
-    func updateAuthentication(forRequest request: URLRequest, completion: @escaping (Bool) -> Void)
+    ///   - completion: signals the library of the authentication credentials update result in order to retry or not
+    func updateAuthentication(forRequest request: URLRequest, completion: @escaping (AuthenticationUpdateResult) -> Void)
+}
+
+public enum AuthenticationUpdateResult {
+    case success
+    case failure
+    case notRelevant
 }

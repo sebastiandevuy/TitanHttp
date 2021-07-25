@@ -47,8 +47,13 @@ class TitanSessionRequestInterceptor: RequestInterceptor {
                 return
             }
             lock.lock()
-            authHandler.updateAuthentication(forRequest: originalRequest) { [weak self] success in
-                success ? completion(.retry) : completion(.doNotRetry)
+            authHandler.updateAuthentication(forRequest: originalRequest) { [weak self] result in
+                switch result {
+                case .success:
+                    completion(.retry)
+                case .failure, .notRelevant:
+                    completion(.doNotRetry)
+                }
                 self?.lock.unlock()
             }
         default:

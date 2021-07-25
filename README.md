@@ -31,7 +31,7 @@ public struct TitanConfiguration {
 }
 ```
 
-TitanAuthHandlerProtocol provides 2 functions that will be called whenever a request is made (you can parse the url and decide what set of authentication headers to add), and whenever a 403 is returned from a service so you may act on refreshing authentication credentials or not. Once you refresh you return true if succesfull or false if it fails. It will retry the request and call again (getAuthenticationHeadersIfNeeded) so it will pick up the updated values from there. The url of the request is provided to give you context.
+TitanAuthHandlerProtocol provides 2 functions that will be called whenever a request is made (you can parse the url and decide what set of authentication headers to add), and whenever a 403 is returned from a service so you may act on refreshing authentication credentials or not. Once you refresh you either return success or failure, or notRelevant if you actually dont care about refreshing for a specific request (Ex: a url you dont actually handle). It will retry the request and call again (getAuthenticationHeadersIfNeeded) so it will pick up the updated values from there. The url of the request is provided to give you context.
 
 ```sh
 public protocol TitanAuthHandlerProtocol {
@@ -43,10 +43,16 @@ public protocol TitanAuthHandlerProtocol {
     /// Provides the request that failed with 403 to obtain credentials and have them available for next retry
     /// - Parameters:
     ///   - request: original request
-    ///   - completion: signals the library of the authentication credentials update success or failure in order to retry or not
-    func updateAuthentication(forRequest request: URLRequest, completion: @escaping (Bool) -> Void)
+    ///   - completion: signals the library of the authentication credentials update result in order to retry or not
+    func updateAuthentication(forRequest request: URLRequest, completion: @escaping (AuthenticationUpdateResult) -> Void)
 }
 ```
+
+public enum AuthenticationUpdateResult {
+    case success
+    case failure
+    case notRelevant
+}
 
 To make a basic request just create a subscriber and sink
 
